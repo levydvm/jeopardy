@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Play and edit a Jeopardy-style quiz board with team scores. It runs in the browser, with nothing to install.">
+  <title>Jeopardy Game</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#grid">Skip to the board</a>
+  <main id="app" class="app">
+    <header class="intro">
+      <p class="kicker">One screen. Your questions. Your teams.</p>
+      <h1>Jeopardy Game</h1>
+      <p class="subtitle">A category board you can edit, play, and put on a projector. The example is ready — or make it yours.</p>
+      <noscript><p class="warning">Enable JavaScript to edit and play. No account is needed.</p></noscript>
+    </header>
+
+    <div id="board" hidden>
+      <p id="storage-warning" class="warning" role="alert" hidden></p>
+      <div class="toolbar">
+        <label class="title-field">
+          <span class="title-label">Game title</span>
+          <input id="game-title" maxlength="100" autocomplete="off">
+        </label>
+        <div class="actions">
+          <button id="mode-toggle" class="btn primary" type="button">Play game</button>
+          <button id="present-toggle" class="btn" type="button">Present</button>
+          <button id="fullscreen-toggle" class="btn" type="button">Fullscreen</button>
+        </div>
+      </div>
+
+      <div id="edit-tools" class="edit-tools">
+        <button type="button" class="btn" data-action="add-category">+ Category</button>
+        <button type="button" class="btn" data-action="remove-category">&minus; Last category</button>
+        <button type="button" class="btn" data-action="add-row">+ Point row</button>
+        <button type="button" class="btn" data-action="remove-row">&minus; Last row</button>
+        <button type="button" class="btn" data-action="add-team">+ Team</button>
+        <button type="button" class="btn" data-action="remove-team">&minus; Last team</button>
+        <p class="help">Rename categories and row points here. Select a square to write its question and answer. Changes save as you type.</p>
+      </div>
+
+      <div class="grid-scroll">
+        <div id="grid" class="grid" aria-label="Game board"></div>
+      </div>
+
+      <p id="status" class="status" role="status"></p>
+
+      <div class="toolbar scores-head">
+        <strong>Team scores</strong>
+        <label class="step-field">Adjust by
+          <input id="score-step" type="number" min="1" max="100000" step="1" inputmode="numeric" autocomplete="off">
+        </label>
+      </div>
+      <div id="teams" class="teams"></div>
+
+      <div class="actions game-actions">
+        <button id="restart" class="btn" type="button">Restart game</button>
+        <button id="blank" class="btn" type="button">New blank game</button>
+        <button id="example" class="btn" type="button">Load example</button>
+      </div>
+      <p class="help save-note">Saved in this browser only. Refresh keeps the game on this device. Clearing site data removes it.</p>
+    </div>
+
+    <dialog id="editor" aria-labelledby="editor-title">
+      <h2 id="editor-title">Edit question</h2>
+      <p class="help">Changes save as you type.</p>
+      <label class="field">Question
+        <textarea id="edit-question" maxlength="2000"></textarea>
+      </label>
+      <label class="field">Answer
+        <textarea id="edit-answer" maxlength="2000"></textarea>
+      </label>
+      <label class="check">
+        <input id="edit-played" type="checkbox"> Already played
+      </label>
+      <div class="dialog-actions">
+        <button id="edit-done" class="btn primary" type="button">Done</button>
+      </div>
+    </dialog>
+
+    <dialog id="clue" aria-labelledby="clue-heading">
+      <div class="clue-bar">
+        <h2 id="clue-heading"></h2>
+        <button id="close-clue" class="btn" type="button">Back to grid · mark played</button>
+      </div>
+      <div class="clue-stage">
+        <button id="reveal" class="reveal" type="button">
+          <span class="kicker">Question</span>
+          <span id="clue-text" class="clue-text"></span>
+          <span id="reveal-hint" class="reveal-hint">Reveal answer · click here or press Enter</span>
+        </button>
+        <div id="answer-wrap" hidden aria-live="polite">
+          <p class="kicker">Answer</p>
+          <p id="answer-text" class="answer-text"></p>
+        </div>
+      </div>
+      <p id="award-hint" class="help center"></p>
+      <div id="clue-teams" class="teams"></div>
+    </dialog>
+  </main>
+
+  <details class="how-to">
+    <summary>How to play and edit</summary>
+    <ol>
+      <li><strong>Edit the board.</strong> Choose Edit game, rename the categories, and set the points at the start of each row. Click a square to write a question and an answer. Add or remove categories and point rows. Removing one deletes its questions and asks you to confirm.</li>
+      <li><strong>Name the teams</strong> before you play. You can add or remove teams in the editor. Removing a team deletes its score and asks you to confirm.</li>
+      <li><strong>Play.</strong> A team picks a category and a point value. Click the square to show the question, then click again (or press Enter) to show the answer. There is no automatic judging.</li>
+      <li><strong>Score by hand.</strong> While a question is open, + and − add or subtract that question’s points for one team. Scores may go below zero. Back to grid marks the square played, and it turns grey.</li>
+      <li><strong>Adjust on the grid.</strong> Set Adjust by, then use a team’s + or − to add or subtract that amount — a bonus, a correction, or a penalty you choose.</li>
+      <li><strong>Present</strong> fills the window for a projector or TV. Team scores stay on screen when a question is open. Fullscreen hides the browser toolbar. Exit presentation (or Escape, when no question is open) returns to the page.</li>
+      <li><strong>Restart game</strong> clears played squares and sets scores to zero. Questions, categories, point values, and team names stay. New blank game and Load example replace the current game. Each asks you to confirm.</li>
+    </ol>
+    <p>Only squares with both a question and an answer can be played. The line under the board shows how many are ready, or how many are left.</p>
+  </details>
+
+  <footer class="disclaimer">
+    <p>Jeopardy Game is an independent quiz board. It is not affiliated with, sponsored by, or endorsed by the Jeopardy television show or its owners. Jeopardy is a trademark of its owner.</p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
