@@ -432,6 +432,81 @@ textarea {
   font-size: 0.9rem;
 }
 
+.library {
+  margin-top: 0.9rem;
+}
+
+.library .help {
+  margin: 0 0 0.55rem;
+}
+
+.library .actions {
+  margin-top: 0.35rem;
+}
+
+.account {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 215, 106, 0.12);
+  border: 1px solid rgba(255, 215, 106, 0.45);
+  color: var(--gold);
+  font-size: 0.92rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.file-list {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: min(50vh, 420px);
+  overflow: auto;
+}
+
+.file-row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: stretch;
+}
+
+.file-open {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: #16285f;
+  color: #fff;
+  border: 1px solid #8ea4d8;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+}
+
+.file-open:hover:not(:disabled) {
+  background: #22387d;
+}
+
+.file-open span,
+.file-open small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.file-open small {
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.app.is-presenting .library {
+  display: none;
+}
+
 .warning {
   margin: 0.85rem 0 0;
   padding: 0.75rem 0.85rem;
