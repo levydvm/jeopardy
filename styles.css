@@ -842,3 +842,337 @@ body:not(.is-editing) .title-field input {
     scroll-behavior: auto;
   }
 }
+
+/*
+ * Play and present keep the whole board inside the viewport.
+ * Edit mode is unchanged and may scroll.
+ */
+body:not(.is-editing) .app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: clamp(0.3rem, 1vh, 0.7rem) clamp(0.4rem, 1.4vw, 0.9rem);
+  overflow: hidden;
+}
+
+body:not(.is-editing) .intro {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-height: 0;
+}
+
+body:not(.is-editing) .intro .kicker,
+body:not(.is-editing) .intro .subtitle {
+  display: none;
+}
+
+body:not(.is-editing) .intro h1 {
+  margin: 0;
+  font-size: clamp(0.9rem, 2.2vh, 1.35rem);
+  line-height: 1.1;
+}
+
+body:not(.is-editing) #board {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.15rem, 0.6vh, 0.4rem);
+}
+
+body:not(.is-editing) .toolbar,
+body:not(.is-editing) .scores-head {
+  flex: none;
+  margin: 0;
+  gap: 0.35rem 0.6rem;
+  align-items: center;
+}
+
+body:not(.is-editing) .title-field {
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: none;
+}
+
+body:not(.is-editing) .title-field input {
+  min-width: 0;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  font-size: clamp(0.95rem, 2.4vh, 1.7rem);
+  text-overflow: ellipsis;
+}
+
+body:not(.is-editing) .actions,
+body:not(.is-editing) .game-actions {
+  flex: none;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+body:not(.is-editing) .btn,
+body:not(.is-editing) .score-btn {
+  padding: 0.22rem 0.5rem;
+  font-size: clamp(0.68rem, 1.6vh, 0.92rem);
+}
+
+body:not(.is-editing) .score-btn {
+  min-width: clamp(1.5rem, 3.2vh, 2.4rem);
+  min-height: clamp(1.5rem, 3.2vh, 2.4rem);
+  width: clamp(1.5rem, 3.2vh, 2.4rem);
+  height: clamp(1.5rem, 3.2vh, 2.4rem);
+  padding: 0;
+}
+
+body:not(.is-editing) .save-note {
+  display: none;
+}
+
+body:not(.is-editing) .library {
+  flex: none;
+  margin: 0;
+}
+
+body:not(.is-editing) .library .help,
+body:not(.is-editing) .library .status,
+body:not(.is-editing) #library-message {
+  margin: 0;
+  font-size: clamp(0.65rem, 1.5vh, 0.82rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body:not(.is-editing) .status {
+  flex: none;
+  margin: 0;
+  font-size: clamp(0.65rem, 1.5vh, 0.88rem);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body:not(.is-editing) .step-field {
+  font-size: clamp(0.68rem, 1.6vh, 0.9rem);
+  gap: 0.3rem;
+}
+
+body:not(.is-editing) .step-field input {
+  width: 4.5rem;
+  padding: 0.15rem 0.35rem;
+}
+
+body:not(.is-editing) .scores-head strong {
+  font-size: clamp(0.75rem, 1.7vh, 1rem);
+}
+
+body:not(.is-editing) .teams {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: clamp(0.2rem, 0.5vh, 0.4rem);
+  margin: 0;
+}
+
+body:not(.is-editing) .team {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.18rem 0.4rem;
+}
+
+body:not(.is-editing) .team-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(0.68rem, 1.6vh, 0.92rem);
+}
+
+body:not(.is-editing) .score-controls {
+  flex: none;
+  gap: 0.25rem;
+}
+
+body:not(.is-editing) .score {
+  font-size: clamp(0.85rem, 2.2vh, 1.45rem);
+}
+
+body:not(.is-editing) .grid-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  padding: clamp(0.25rem, 0.7vh, 0.5rem);
+}
+
+body:not(.is-editing) .grid {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  gap: clamp(0.12rem, 0.45vmin, 0.4rem);
+  grid-template-rows: minmax(0, 0.7fr) repeat(var(--rows, 5), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr));
+}
+
+body:not(.is-editing) .grid > * {
+  min-width: 0;
+  min-height: 0;
+}
+
+body:not(.is-editing) .category {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: 0;
+  max-height: 100%;
+  padding: 0.1rem 0.2rem;
+  font-size: clamp(0.48rem, min(calc(7.5vw / var(--cols, 5)), calc(9vh / (var(--rows, 5) + 3))), 1.25rem);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  align-self: stretch;
+}
+
+body:not(.is-editing) .cell {
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  padding: 0.08rem;
+  gap: 0;
+}
+
+body:not(.is-editing) .cell .value {
+  font-size: clamp(0.55rem, min(calc(10vw / var(--cols, 5)), calc(26vh / (var(--rows, 5) + 2))), 4rem);
+  max-width: 100%;
+}
+
+body:not(.is-editing) .cell .detail {
+  font-size: clamp(0.45rem, 1.2vh, 0.7rem);
+}
+
+.app.is-presenting {
+  overflow: hidden;
+  padding: clamp(0.25rem, 0.8vh, 0.55rem) clamp(0.35rem, 1.2vw, 0.75rem);
+}
+
+.app.is-presenting .grid {
+  grid-template-rows: minmax(0, 0.62fr) repeat(var(--rows, 5), minmax(0, 1fr));
+}
+
+.app.is-presenting .category {
+  font-size: clamp(0.48rem, min(calc(8vw / var(--cols, 5)), calc(8vh / (var(--rows, 5) + 3))), 1.45rem);
+}
+
+.app.is-presenting .cell .value {
+  font-size: clamp(0.6rem, min(calc(12vw / var(--cols, 5)), calc(32vh / (var(--rows, 5) + 2))), 4.25rem);
+}
+
+html:has(body.is-presenting) {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body.is-presenting {
+  min-height: 0;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+body.is-presenting .how-to,
+body.is-presenting .disclaimer,
+body.is-presenting .skip {
+  display: none;
+}
+
+#clue {
+  padding: clamp(0.35rem, 1.2vh, 1rem);
+  overflow: hidden;
+  max-height: 100dvh;
+}
+
+#clue[open] {
+  overflow: hidden;
+}
+
+.clue-bar {
+  flex-wrap: nowrap;
+  min-width: 0;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.clue-bar h2 {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(0.8rem, 2.2vh, 1.45rem);
+}
+
+#close-clue {
+  flex: none;
+  padding: 0.28rem 0.5rem;
+  font-size: clamp(0.68rem, 1.6vh, 0.92rem);
+}
+
+.clue-stage {
+  overflow: hidden;
+  min-height: 0;
+  padding: clamp(0.2rem, 1vh, 1rem) 0.25rem;
+  container-type: size;
+  container-name: clue;
+}
+
+.clue-text,
+.answer-text {
+  font-size: clamp(0.8rem, min(8cqb, 5.5cqi), 3.2rem);
+  line-height: 1.15;
+}
+
+.reveal {
+  padding: 0.15rem;
+}
+
+.reveal-hint,
+#award-hint {
+  margin-top: 0.45rem;
+  font-size: clamp(0.62rem, 1.5vh, 0.9rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#clue .teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 0.28rem;
+  margin: 0;
+  flex: none;
+}
+
+#clue .team {
+  padding: 0.15rem 0.4rem;
+}
+
+#clue .kicker {
+  margin-bottom: 0.25rem;
+  font-size: clamp(0.58rem, 1.3vh, 0.75rem);
+}
