@@ -24,6 +24,7 @@ import {
   setTitle,
   updateClue,
 } from './game.js';
+import { clearLinkedDriveFile, initLibrary } from './library.js';
 import { loadSavedGame, saveGame } from './persist.js';
 import {
   closeClueDialog,
@@ -93,6 +94,7 @@ function replaceGame(next) {
   closeEditorDialog();
   closeClueDialog();
   state = next;
+  clearLinkedDriveFile();
   persist();
   render(state);
   releaseFullscreen(wasPresenting);
@@ -396,6 +398,7 @@ function boot() {
     noteWarning('blocked', BLOCKED_MESSAGE);
   } else if (loaded.invalid) {
     state = createGame(false);
+    clearLinkedDriveFile();
     noteWarning('invalid', INVALID_MESSAGE);
   } else {
     state = loaded.game ?? createGame(false);
@@ -403,6 +406,10 @@ function boot() {
 
   bind();
   render(state);
+  initLibrary({
+    getState: () => state,
+    replaceGame,
+  });
   syncFullscreenButton();
   if (state.openClue) showClue(state);
   persist();

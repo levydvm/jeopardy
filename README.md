@@ -32,23 +32,70 @@ Choose **Edit game**.
 
 **New blank game** replaces the board with an empty grid of the same shape. **Load example** puts the general-knowledge game back. Each of these asks you to confirm.
 
-## Saving
+## Saving on this device
 
-The game is stored in this browser with `localStorage` (key `jeopardy-game-v1`). That includes questions, categories, point values, team names and scores, played squares, and a question you still have open. Refresh the page and it comes back.
+The game is stored in this browser with `localStorage` (key `jeopardy-game-v1`). That includes questions, categories, point values, team names and scores, played squares, and a question you still have open. Refresh the page and it comes back. This still happens when Google sign-in is turned off, and it still happens while you are signed in.
 
-Nothing is sent to a server. After the page has loaded, the controls work offline. Clearing site data, using a private window, or blocking storage can erase the game or prevent saving. If saving is blocked, a warning appears on the board. Keep your own copy of any questions you cannot afford to lose.
+Clearing site data, using a private window, or blocking storage can erase the game or prevent saving. If saving is blocked, a warning appears on the board. Use one tab. Two open tabs can overwrite each other.
 
-Use one tab. Two open tabs can overwrite each other.
+**Export JSON** downloads the current game. **Import JSON** loads a file that was exported from this app. Import asks before it replaces the game on screen, and it rejects a file that is not valid JSON or not a game this version can read.
+
+## Google Drive
+
+Sign-in is optional. Until a Client ID is set, the Google buttons stay hidden and a short note explains that. Export and Import keep working.
+
+When you are signed in:
+
+- **Save to Drive** puts the current game in a folder named **Jeopardy Games**, creating that folder the first time. The file name starts from the game title, and you can edit it. Saving again updates that same file. **Save as new** adds another file and leaves the previous one alone.
+- **Open from Drive** lists the games in that folder with the name and the date they were last changed. Choosing one asks before it replaces the game on screen. **Delete** asks before it removes a file.
+- **Sign out** drops the Google session in this tab. The game on screen stays, still saved in this browser.
+
+The only Drive scope is `https://www.googleapis.com/auth/drive.file`. The app can only see files it created. `openid`, `userinfo.email`, and `userinfo.profile` are requested as well so the page can show the signed-in name and email. There is no backend and no client secret. If the access token expires, the next save or open asks Google for a new one.
+
+### Turn on Google sign-in
+
+The Client ID goes in `js/config.js`, on this line:
+
+```javascript
+export const GOOGLE_CLIENT_ID = '';
+```
+
+Paste the ID between the quotes. A Client ID is public and safe to commit. Do not create a client secret for this app.
+
+1. Open [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a project, or select one. The name can be anything, for example `Jeopardy Game`.
+3. Open **APIs & Services → Library**, search for **Google Drive API**, and click **Enable**.
+4. Open **APIs & Services → OAuth consent screen**.
+   - Choose **External**.
+   - Fill in the app name and a support email.
+   - Leave the publishing status in **Testing**.
+   - Under **Test users**, add the Google account you will sign in with. In testing mode, only those accounts can sign in.
+   - If the screen asks for scopes, add `https://www.googleapis.com/auth/drive.file`, `openid`, `https://www.googleapis.com/auth/userinfo.email`, and `https://www.googleapis.com/auth/userinfo.profile`.
+5. Open **APIs & Services → Credentials → Create credentials → OAuth client ID**.
+   - Application type: **Web application**.
+   - Under **Authorized JavaScript origins**, add:
+     - `https://levydvm.github.io`
+     - `http://localhost:8000`
+   - You do not need a client secret, and you do not need redirect URIs for this token-based sign-in.
+6. Copy the **Client ID** (it ends in `.apps.googleusercontent.com`) into `js/config.js`:
+
+```javascript
+export const GOOGLE_CLIENT_ID = 'your-id.apps.googleusercontent.com';
+```
+
+7. Save the file and, if the site is already published, push `main`. The origin must match exactly, including `https` and with no path. `https://levydvm.github.io/jeopardy/` is served from the origin `https://levydvm.github.io`.
+
+While the consent screen stays in Testing, Google expires the grant after about seven days. Sign in again when that happens. Add each person who should sign in as a test user, or publish the app once you are ready for that.
 
 ## Local preview
 
 The scripts are ES modules, so open the site through a static server rather than by double-clicking `index.html` (browsers block modules on `file://` URLs).
 
 ```bash
-python3 -m http.server 8080
+python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8080/`.
+Then visit `http://localhost:8000/`. Offline play works on any port. Google sign-in works only for origins listed on the OAuth client, so use port **8000** unless you add the port you are using.
 
 ## GitHub Pages
 
@@ -66,8 +113,13 @@ Paths in the page are relative, so the site works when Pages serves it from eith
 
 - `index.html` — page structure
 - `styles.css` — board, editor, and presentation styles
+- `js/config.js` — Google Client ID (`GOOGLE_CLIENT_ID`)
 - `js/sample.js` — the built-in example questions
 - `js/game.js` — rules and game state (add new actions here)
 - `js/persist.js` — `localStorage` load and save
+- `js/files.js` — file names and JSON checks for export, import, and Drive
+- `js/drive.js` — Google Drive REST calls
+- `js/google-auth.js` — Google sign-in token client
+- `js/library.js` — Export, Import, and Drive buttons
 - `js/ui.js` — rendering
 - `js/main.js` — connects the controls to the game

@@ -62,8 +62,47 @@
         <button id="blank" class="btn" type="button">New blank game</button>
         <button id="example" class="btn" type="button">Load example</button>
       </div>
-      <p class="help save-note">Saved in this browser only. Refresh keeps the game on this device. Clearing site data removes it.</p>
+      <p class="help save-note">Saved in this browser automatically. Refresh keeps the game on this device.</p>
+
+      <section id="library" class="library" aria-label="Save and open games">
+        <p id="library-note" class="help" hidden></p>
+        <p id="library-message" class="status" role="status" hidden></p>
+        <div class="actions">
+          <button id="google-sign-in" class="btn" type="button" hidden>Sign in with Google</button>
+          <span id="google-account" class="account" hidden></span>
+          <button id="google-sign-out" class="btn" type="button" hidden>Sign out</button>
+          <button id="drive-save" class="btn" type="button" hidden>Save to Drive</button>
+          <button id="drive-open" class="btn" type="button" hidden>Open from Drive</button>
+          <button id="export-json" class="btn" type="button">Export JSON</button>
+          <button id="import-json" class="btn" type="button">Import JSON</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
+      </section>
     </div>
+
+    <dialog id="drive-save-dialog" aria-labelledby="drive-save-title">
+      <h2 id="drive-save-title">Save to Drive</h2>
+      <p id="drive-save-hint" class="help"></p>
+      <label class="field">File name
+        <input id="drive-file-name" maxlength="120" autocomplete="off">
+      </label>
+      <p id="drive-save-error" class="warning" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button id="drive-save-cancel" class="btn" type="button">Cancel</button>
+        <button id="drive-save-new" class="btn" type="button">Save as new</button>
+        <button id="drive-save-confirm" class="btn primary" type="button">Save</button>
+      </div>
+    </dialog>
+
+    <dialog id="drive-open-dialog" aria-labelledby="drive-open-title">
+      <h2 id="drive-open-title">Open from Drive</h2>
+      <p class="help">Games in your Jeopardy Games folder. Opening one replaces the game on this screen.</p>
+      <p id="drive-open-status" class="status" role="status"></p>
+      <ul id="drive-file-list" class="file-list"></ul>
+      <div class="dialog-actions">
+        <button id="drive-open-close" class="btn" type="button">Close</button>
+      </div>
+    </dialog>
 
     <dialog id="editor" aria-labelledby="editor-title">
       <h2 id="editor-title">Edit question</h2>
@@ -113,6 +152,7 @@
       <li><strong>Adjust on the grid.</strong> Set Adjust by, then use a team’s + or − to add or subtract that amount — a bonus, a correction, or a penalty you choose.</li>
       <li><strong>Present</strong> fills the window for a projector or TV. Team scores stay on screen when a question is open. Fullscreen hides the browser toolbar. Exit presentation (or Escape, when no question is open) returns to the page.</li>
       <li><strong>Restart game</strong> clears played squares and sets scores to zero. Questions, categories, point values, and team names stay. New blank game and Load example replace the current game. Each asks you to confirm.</li>
+      <li><strong>Keep a copy.</strong> Export JSON downloads the game, and Import JSON loads one back. With a Google Client ID in <code>js/config.js</code>, Sign in with Google can save and open games in a Drive folder named Jeopardy Games.</li>
     </ol>
     <p>Only squares with both a question and an answer can be played. The line under the board shows how many are ready, or how many are left.</p>
   </details>
