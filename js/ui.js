@@ -165,7 +165,7 @@ function renderGrid(state) {
       input.dataset.col = String(col);
       heading.append(input);
     } else {
-      heading.textContent = categoryLabel(state, col);
+      heading.append(element('span', categoryLabel(state, col), 'category-label'));
     }
     grid.append(heading);
   });
