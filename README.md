@@ -12,7 +12,7 @@ This is an independent quiz tool. It is not affiliated with, sponsored by, or en
 4. Use a team’s **+** or **−** to add or subtract that question’s points. Scores can go below zero.
 5. Choose **Back to grid · mark played**. The square turns grey. Escape does the same thing.
 6. On the grid, set **Adjust by** and use **+** / **−** to change a score by that amount — a bonus, a correction, or a penalty you choose.
-7. Choose **Present** to fill the window for a projector or TV. Team scores stay visible while a question is open. **Fullscreen** hides the browser toolbar. **Exit presentation**, or Escape when no question is open, returns to the page.
+7. Choose **Present** to fill the window for a projector or TV. The whole board stays on screen in play and present, including on a small or narrow window; edit mode can still scroll. Team scores stay visible while a question is open. **Fullscreen** hides the browser toolbar. **Exit presentation**, or Escape when no question is open, returns to the page.
 
 Only squares with both a question and an answer can be played. Squares that are not ready stay on the board and cannot be opened. The line under the board shows how many questions are ready (while editing) or how many are left (while playing).
 

@@ -313,7 +313,41 @@ export function paintClue(state) {
   answerWrap.hidden = !open.answerVisible;
   revealButton.classList.toggle('is-revealed', open.answerVisible);
   awardHint.textContent = `Team buttons add or subtract ${formatNumber(points)} points.`;
+  requestAnimationFrame(fitClueText);
 }
+
+/** Shrink the question and answer until they fit the overlay. */
+export function fitClueText() {
+  if (!clueDialog.open) return;
+  const stage = clueDialog.querySelector('.clue-stage');
+  if (!stage) return;
+  const texts = [clueText, answerText];
+  const max = Math.max(15, Math.min(56, Math.floor(Math.min(stage.clientWidth / 14, stage.clientHeight / 6))));
+  const min = 11;
+  const overflows = () => {
+    if (stage.scrollHeight > stage.clientHeight + 1) return true;
+    const limit = stage.getBoundingClientRect().bottom + 1;
+    return texts.some((el) => !el.closest('[hidden]') && el.getBoundingClientRect().bottom > limit);
+  };
+  let low = min;
+  let high = max;
+  let best = min;
+  while (low <= high) {
+    const mid = Math.floor((low + high) / 2);
+    for (const el of texts) el.style.fontSize = `${mid}px`;
+    if (!overflows()) {
+      best = mid;
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+  for (const el of texts) el.style.fontSize = `${best}px`;
+}
+
+window.addEventListener('resize', () => {
+  if (clueDialog.open) fitClueText();
+});
 
 export function showClue(state) {
   paintClue(state);
