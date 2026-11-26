@@ -765,17 +765,9 @@ body.is-presenting {
   margin-top: 0.25rem;
 }
 
-.app.is-presenting .category {
-  font-size: clamp(0.9rem, 2.1vh, 1.65rem);
-}
-
 .app.is-presenting .cell {
   min-height: 0;
   height: 100%;
-}
-
-.app.is-presenting .cell .value {
-  font-size: clamp(1.8rem, 5.6vh, 4.25rem);
 }
 
 .app.is-presenting .team {
@@ -1019,13 +1011,14 @@ body:not(.is-editing) .grid-scroll {
 }
 
 body:not(.is-editing) .grid {
+  --board-size: clamp(0.55rem, min(calc(10vw / var(--cols, 5)), calc(26vh / (var(--rows, 5) + 2))), 4rem);
   flex: 1 1 auto;
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
   gap: clamp(0.12rem, 0.45vmin, 0.4rem);
-  grid-template-rows: minmax(0, 0.7fr) repeat(var(--rows, 5), minmax(0, 1fr));
+  grid-template-rows: minmax(0, 2.05fr) repeat(var(--rows, 5), minmax(0, 1fr));
   grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr));
 }
 
@@ -1035,18 +1028,33 @@ body:not(.is-editing) .grid > * {
 }
 
 body:not(.is-editing) .category {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   min-height: 0;
   max-height: 100%;
-  padding: 0.1rem 0.2rem;
-  font-size: clamp(0.48rem, min(calc(7.5vw / var(--cols, 5)), calc(9vh / (var(--rows, 5) + 3))), 1.25rem);
-  line-height: 1.05;
-  letter-spacing: 0.01em;
+  padding: 0.12rem 0.18rem;
   align-self: stretch;
+  text-transform: uppercase;
+}
+
+body:not(.is-editing) .category-label {
+  font-family: "Bebas Neue", "Arial Narrow", "Franklin Gothic Medium", "Nimbus Sans Narrow", sans-serif;
+  font-weight: 400;
+  font-size: var(--board-size);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: center;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow-wrap: break-word;
+  max-height: 100%;
+  min-width: 0;
 }
 
 body:not(.is-editing) .cell {
@@ -1058,7 +1066,7 @@ body:not(.is-editing) .cell {
 }
 
 body:not(.is-editing) .cell .value {
-  font-size: clamp(0.55rem, min(calc(10vw / var(--cols, 5)), calc(26vh / (var(--rows, 5) + 2))), 4rem);
+  font-size: var(--board-size);
   max-width: 100%;
 }
 
@@ -1072,15 +1080,8 @@ body:not(.is-editing) .cell .detail {
 }
 
 .app.is-presenting .grid {
-  grid-template-rows: minmax(0, 0.62fr) repeat(var(--rows, 5), minmax(0, 1fr));
-}
-
-.app.is-presenting .category {
-  font-size: clamp(0.48rem, min(calc(8vw / var(--cols, 5)), calc(8vh / (var(--rows, 5) + 3))), 1.45rem);
-}
-
-.app.is-presenting .cell .value {
-  font-size: clamp(0.6rem, min(calc(12vw / var(--cols, 5)), calc(32vh / (var(--rows, 5) + 2))), 4.25rem);
+  --board-size: clamp(1.8rem, 5.6vh, 4.25rem);
+  grid-template-rows: minmax(0, 2.35fr) repeat(var(--rows, 5), minmax(0, 1fr));
 }
 
 html:has(body.is-presenting) {
