@@ -24,6 +24,7 @@ export const SAMPLE_CATEGORIES = [
       {
         question: 'Which particle in an atom carries a negative electric charge?',
         answer: 'An electron',
+        dailyDouble: true,
       },
       {
         question: 'What scale is used to measure how acidic or basic a substance is?',

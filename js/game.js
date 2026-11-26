@@ -6,10 +6,10 @@
  * State shape (version 1):
  * {
  *   version, title, pointValues: number[],
- *   categories: [{ name, clues: [{ question, answer, played }] }],
+ *   categories: [{ name, clues: [{ question, answer, played, dailyDouble }] }],
  *   teams: [{ name, score }],
  *   mode: 'edit' | 'play',
- *   openClue: null | { categoryIndex, rowIndex, answerVisible },
+ *   openClue: null | { categoryIndex, rowIndex, answerVisible, stage, wagerTeam, wagerAmount },
  *   presenting: boolean,
  *   adjustBy: number
  * }
@@ -37,7 +37,7 @@ if (
 }
 
 function emptyClue() {
-  return { question: '', answer: '', played: false };
+  return { question: '', answer: '', played: false, dailyDouble: false };
 }
 
 function defaultPoints(count) {
@@ -57,7 +57,12 @@ export function createGame(blank = false) {
       clues: category.clues.map((clue) =>
         blank
           ? emptyClue()
-          : { question: clue.question, answer: clue.answer, played: false },
+          : {
+            question: clue.question,
+            answer: clue.answer,
+            played: false,
+            dailyDouble: clue.dailyDouble === true,
+          },
       ),
     })),
     teams: [
@@ -98,8 +103,37 @@ export function progressText(state) {
   return 'No questions ready yet. Choose Edit game to add a question and an answer.';
 }
 
+/** True when a saved clue omitted dailyDouble, which older games do. */
+export function readDailyDouble(clue) {
+  if (!clue || clue.dailyDouble === undefined) return false;
+  return clue.dailyDouble === true ? true : clue.dailyDouble === false ? false : null;
+}
+
+export const DAILY_DOUBLE_MINIMUM = 5;
+
+export function boardMaxValue(state) {
+  return state.pointValues.reduce((highest, value) => Math.max(highest, value), 0);
+}
+
+/** Greater of this team's score and the highest clue value on the board. */
+export function wagerLimit(state, teamIndex) {
+  const score = state.teams[teamIndex]?.score ?? 0;
+  return Math.max(score, boardMaxValue(state));
+}
+
+export function minimumWager(state, teamIndex) {
+  const maximum = wagerLimit(state, teamIndex);
+  return maximum >= DAILY_DOUBLE_MINIMUM ? DAILY_DOUBLE_MINIMUM : maximum;
+}
+
+export function isValidWager(state, teamIndex, amount) {
+  if (!Number.isInteger(amount) || !state.teams[teamIndex]) return false;
+  return amount >= minimumWager(state, teamIndex) && amount <= wagerLimit(state, teamIndex);
+}
+
 /** Points added or removed by the team buttons right now. */
 export function activePointValue(state) {
+  if (state.openClue?.wagerAmount != null) return state.openClue.wagerAmount;
   if (state.openClue) return state.pointValues[state.openClue.rowIndex];
   return state.adjustBy;
 }
@@ -131,11 +165,13 @@ export function parseGame(input) {
     }
     if (category.clues.length !== rows) return null;
     for (const clue of category.clues) {
+      const dailyDouble = readDailyDouble(clue);
       if (
         !clue ||
         !isString(clue.question, LIMITS.clue) ||
         !isString(clue.answer, LIMITS.clue) ||
-        typeof clue.played !== 'boolean'
+        typeof clue.played !== 'boolean' ||
+        dailyDouble === null
       ) {
         return null;
       }
@@ -154,21 +190,36 @@ export function parseGame(input) {
   let openClue = null;
   if (input.openClue !== null) {
     const open = input.openClue;
+    const stage = open?.stage === undefined ? 'clue' : open.stage;
     if (
       !open ||
       input.mode !== 'play' ||
       !isInt(open.categoryIndex, 0, input.categories.length - 1) ||
       !isInt(open.rowIndex, 0, rows - 1) ||
-      typeof open.answerVisible !== 'boolean'
+      typeof open.answerVisible !== 'boolean' ||
+      (stage !== 'announce' && stage !== 'wager' && stage !== 'clue')
     ) {
       return null;
     }
     const clue = input.categories[open.categoryIndex].clues[open.rowIndex];
     if (clue.played || !isReady(clue)) return null;
+    const dailyDouble = readDailyDouble(clue) === true;
+    if ((stage === 'announce' || stage === 'wager') && !dailyDouble) return null;
+    let wagerTeam = open.wagerTeam === undefined ? null : open.wagerTeam;
+    let wagerAmount = open.wagerAmount === undefined ? null : open.wagerAmount;
+    if (wagerTeam !== null && !isInt(wagerTeam, 0, input.teams.length - 1)) return null;
+    if (wagerAmount !== null && !isInt(wagerAmount, 1, LIMITS.maxScore)) return null;
+    if (!dailyDouble || stage !== 'clue') {
+      if (stage !== 'wager') wagerTeam = null;
+      wagerAmount = null;
+    }
     openClue = {
       categoryIndex: open.categoryIndex,
       rowIndex: open.rowIndex,
-      answerVisible: open.answerVisible,
+      answerVisible: stage === 'clue' ? open.answerVisible : false,
+      stage,
+      wagerTeam,
+      wagerAmount,
     };
   }
 
@@ -182,6 +233,7 @@ export function parseGame(input) {
         question: clue.question,
         answer: clue.answer,
         played: clue.played,
+        dailyDouble: readDailyDouble(clue) === true,
       })),
     })),
     teams: input.teams.map((team) => ({ name: team.name, score: team.score })),
@@ -227,6 +279,7 @@ export function updateClue(state, col, row, patch) {
   if (typeof patch.question === 'string') clue.question = patch.question.slice(0, LIMITS.clue);
   if (typeof patch.answer === 'string') clue.answer = patch.answer.slice(0, LIMITS.clue);
   if (typeof patch.played === 'boolean') clue.played = patch.played;
+  if (typeof patch.dailyDouble === 'boolean') clue.dailyDouble = patch.dailyDouble;
   return true;
 }
 
@@ -245,12 +298,42 @@ export function openClue(state, categoryIndex, rowIndex) {
   if (state.mode !== 'play' || state.openClue) return false;
   const clue = state.categories[categoryIndex]?.clues[rowIndex];
   if (!clue || clue.played || !isReady(clue)) return false;
-  state.openClue = { categoryIndex, rowIndex, answerVisible: false };
+  state.openClue = {
+    categoryIndex,
+    rowIndex,
+    answerVisible: false,
+    stage: clue.dailyDouble ? 'announce' : 'clue',
+    wagerTeam: null,
+    wagerAmount: null,
+  };
+  return true;
+}
+
+export function beginWager(state) {
+  if (state.openClue?.stage !== 'announce') return false;
+  state.openClue.stage = 'wager';
+  state.openClue.wagerTeam = state.teams.length ? 0 : null;
+  return true;
+}
+
+export function chooseWagerTeam(state, teamIndex) {
+  if (state.openClue?.stage !== 'wager' || !state.teams[teamIndex]) return false;
+  state.openClue.wagerTeam = teamIndex;
+  return true;
+}
+
+export function commitWager(state, amount) {
+  const open = state.openClue;
+  if (!open || open.stage !== 'wager' || open.wagerTeam == null) return false;
+  if (!isValidWager(state, open.wagerTeam, amount)) return false;
+  open.wagerAmount = amount;
+  open.stage = 'clue';
   return true;
 }
 
 export function revealAnswer(state) {
   if (!state.openClue || state.openClue.answerVisible) return false;
+  if (state.openClue.stage && state.openClue.stage !== 'clue') return false;
   state.openClue.answerVisible = true;
   return true;
 }
@@ -267,6 +350,8 @@ export function finishClue(state) {
 export function changeScore(state, teamIndex, direction) {
   const team = state.teams[teamIndex];
   if (!team || (direction !== 1 && direction !== -1)) return false;
+  const open = state.openClue;
+  if (open?.stage === 'clue' && open.wagerAmount != null && teamIndex !== open.wagerTeam) return false;
   const next = team.score + direction * activePointValue(state);
   const clamped = Math.max(-LIMITS.maxScore, Math.min(LIMITS.maxScore, next));
   if (clamped === team.score) return false;

@@ -117,6 +117,9 @@
         <textarea id="edit-answer" maxlength="2000"></textarea>
       </label>
       <label class="check">
+        <input id="edit-daily-double" type="checkbox"> Daily Double
+      </label>
+      <label class="check">
         <input id="edit-played" type="checkbox"> Already played
       </label>
       <div class="dialog-actions">
@@ -129,7 +132,23 @@
         <h2 id="clue-heading"></h2>
         <button id="close-clue" class="btn" type="button">Back to grid · mark played</button>
       </div>
-      <div class="clue-stage">
+      <div id="dd-announce" class="dd-screen" hidden>
+        <p class="kicker">This clue is a</p>
+        <p class="dd-title">Daily Double</p>
+        <button id="dd-to-wager" class="btn primary" type="button">Place a wager</button>
+      </div>
+      <div id="dd-wager" class="dd-screen" hidden>
+        <p class="kicker">Daily Double</p>
+        <p class="dd-sub">Who is answering?</p>
+        <div id="dd-teams" class="dd-team-list"></div>
+        <label class="dd-wager-field">Wager
+          <input id="dd-amount" type="number" min="5" step="1" inputmode="numeric" autocomplete="off">
+        </label>
+        <p id="dd-wager-hint" class="help"></p>
+        <p id="dd-wager-error" class="warning" role="alert" hidden></p>
+        <button id="dd-show-clue" class="btn primary" type="button">Show the clue</button>
+      </div>
+      <div id="clue-stage" class="clue-stage">
         <button id="reveal" class="reveal" type="button">
           <span class="kicker">Question</span>
           <span id="clue-text" class="clue-text"></span>
@@ -152,6 +171,7 @@
       <li><strong>Name the teams</strong> before you play. You can add or remove teams in the editor. Removing a team deletes its score and asks you to confirm.</li>
       <li><strong>Play.</strong> A team picks a category and a point value. Click the square to show the question, then click again (or press Enter) to show the answer. There is no automatic judging.</li>
       <li><strong>Score by hand.</strong> While a question is open, + and − add or subtract that question’s points for one team. Scores may go below zero. Back to grid marks the square played, and it turns grey.</li>
+      <li><strong>Daily Double.</strong> Mark a clue in the editor. On the board it looks like any other square. When it is picked, the host sees Daily Double, chooses the team, and enters a wager from 5 up to the greater of that team’s score and the highest value on the board. Only that team gains or loses the wager.</li>
       <li><strong>Adjust on the grid.</strong> Set Adjust by, then use a team’s + or − to add or subtract that amount — a bonus, a correction, or a penalty you choose.</li>
       <li><strong>Present</strong> fills the window for a projector or TV. Team scores stay on screen when a question is open. Fullscreen hides the browser toolbar. Exit presentation (or Escape, when no question is open) returns to the page.</li>
       <li><strong>Restart game</strong> clears played squares and sets scores to zero. Questions, categories, point values, and team names stay. New blank game and Load example replace the current game. Each asks you to confirm.</li>

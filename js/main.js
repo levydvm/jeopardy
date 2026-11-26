@@ -6,7 +6,10 @@ import {
   addCategory,
   addRow,
   addTeam,
+  beginWager,
   changeScore,
+  chooseWagerTeam,
+  commitWager,
   createGame,
   finishClue,
   openClue,
@@ -36,6 +39,7 @@ import {
   nodes,
   paintClue,
   render,
+  setWagerError,
   showClue,
   showEditor,
   showWarning,
@@ -43,6 +47,7 @@ import {
   updateRowPoints,
   updateScores,
   updateStatus,
+  wagerAmountValue,
 } from './ui.js';
 
 const BLOCKED_MESSAGE =
@@ -324,6 +329,44 @@ function onEditorPlayed() {
   persist();
 }
 
+function onEditorDailyDouble() {
+  if (!editing) return;
+  updateClue(state, editing.col, editing.row, { dailyDouble: nodes.editorDailyDouble.checked });
+  persist();
+}
+
+function onDailyDoubleContinue() {
+  if (!beginWager(state)) return;
+  persist();
+  showClue(state);
+}
+
+function onChooseWagerTeam(event) {
+  const button = event.target.closest('[data-wager-team]');
+  if (!button) return;
+  if (!chooseWagerTeam(state, Number(button.dataset.wagerTeam))) return;
+  setWagerError('');
+  persist();
+  paintClue(state);
+}
+
+function readWagerAmount() {
+  const raw = wagerAmountValue().trim();
+  if (!/^\d+$/.test(raw)) return null;
+  return Number(raw);
+}
+
+function onCommitWager() {
+  const amount = readWagerAmount();
+  if (!commitWager(state, amount)) {
+    setWagerError('Enter a whole number inside the allowed range.');
+    return;
+  }
+  setWagerError('');
+  persist();
+  showClue(state);
+}
+
 function onEscape(event) {
   if (event.key !== 'Escape') return;
   if (nodes.editor.open || nodes.clueDialog.open) return;
@@ -332,6 +375,7 @@ function onEscape(event) {
 
 function onClueKeydown(event) {
   if (event.key !== 'Enter' || !state.openClue || state.openClue.answerVisible) return;
+  if ((state.openClue.stage || 'clue') !== 'clue') return;
   const target = event.target;
   if (target instanceof HTMLElement && target.closest('button') && target.id !== 'reveal') return;
   event.preventDefault();
@@ -378,6 +422,15 @@ function bind() {
   nodes.editorQuestion.addEventListener('input', onEditorQuestion);
   nodes.editorAnswer.addEventListener('input', onEditorAnswer);
   nodes.editorPlayed.addEventListener('change', onEditorPlayed);
+  nodes.editorDailyDouble.addEventListener('change', onEditorDailyDouble);
+  nodes.ddToWager.addEventListener('click', onDailyDoubleContinue);
+  nodes.ddTeams.addEventListener('click', onChooseWagerTeam);
+  nodes.ddShowClue.addEventListener('click', onCommitWager);
+  nodes.ddAmount.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    onCommitWager();
+  });
   nodes.editor.addEventListener('cancel', (event) => {
     event.preventDefault();
     leaveEditor();

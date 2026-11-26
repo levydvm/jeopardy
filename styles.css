@@ -640,7 +640,111 @@ dialog h2 {
 }
 
 .app.is-editing .cell {
+  position: relative;
   min-height: 5.5rem;
+}
+
+.dd-badge {
+  position: absolute;
+  top: 0.22rem;
+  right: 0.22rem;
+  padding: 0.05rem 0.28rem;
+  border-radius: 4px;
+  background: var(--gold);
+  color: #1c1503;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  text-shadow: none;
+}
+
+.dd-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  gap: clamp(0.35rem, 1.4vh, 0.9rem);
+  padding: 0.4rem 0.2rem;
+}
+
+.dd-title {
+  margin: 0;
+  max-width: 100%;
+  padding: 0 0.35rem;
+  font-family: "Bebas Neue", "Arial Narrow", "Franklin Gothic Medium", sans-serif;
+  font-size: clamp(1.8rem, min(11vh, 11vw), 7.5rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.dd-sub {
+  margin: 0;
+  font-size: clamp(1rem, 2.6vh, 1.5rem);
+}
+
+.dd-team-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  width: min(100%, 52rem);
+}
+
+.dd-team {
+  border: 1px solid #8ea4d8;
+  border-radius: 8px;
+  background: #16285f;
+  color: #fff;
+  padding: 0.28rem 0.7rem;
+  font-size: clamp(0.75rem, 1.8vh, 1rem);
+}
+
+.dd-team.is-selected {
+  background: var(--gold);
+  border-color: var(--gold-deep);
+  color: #1c1503;
+  font-weight: 700;
+}
+
+.dd-wager-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: min(14rem, 100%);
+  font-size: 0.9rem;
+}
+
+.dd-wager-field input {
+  text-align: center;
+  font-size: clamp(1.15rem, 4vh, 2rem);
+  font-weight: 800;
+  padding: 0.3rem 0.5rem;
+}
+
+#dd-wager-hint {
+  margin: 0;
+  max-width: 40rem;
+  font-size: clamp(0.72rem, 1.7vh, 0.95rem);
+}
+
+#dd-wager .warning {
+  margin: 0;
+  max-width: 36rem;
+}
+
+body:not(.is-editing) #clue .score-btn.is-word {
+  width: auto;
+  min-width: 5.4rem;
+  height: auto;
+  min-height: 2rem;
+  padding: 0.2rem 0.55rem;
 }
 
 .app.is-editing .cell .value {

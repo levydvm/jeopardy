@@ -6,8 +6,10 @@ import {
   LIMITS,
   categoryLabel,
   isReady,
+  minimumWager,
   progressText,
   teamLabel,
+  wagerLimit,
 } from './game.js';
 
 const $ = (id) => {
@@ -34,7 +36,16 @@ const editorTitle = $('editor-title');
 const editorQuestion = $('edit-question');
 const editorAnswer = $('edit-answer');
 const editorPlayed = $('edit-played');
+const editorDailyDouble = $('edit-daily-double');
 const clueDialog = $('clue');
+const clueStage = $('clue-stage');
+const ddAnnounce = $('dd-announce');
+const ddWager = $('dd-wager');
+const ddTeams = $('dd-teams');
+const ddAmount = $('dd-amount');
+const ddWagerHint = $('dd-wager-hint');
+const ddWagerError = $('dd-wager-error');
+const ddToWager = $('dd-to-wager');
 const clueHeading = $('clue-heading');
 const clueText = $('clue-text');
 const revealButton = $('reveal');
@@ -137,8 +148,10 @@ function syncChrome(state) {
 function cellLabel(state, col, row, editing) {
   const clue = state.categories[col].clues[row];
   const parts = [`${categoryLabel(state, col)}, ${formatNumber(state.pointValues[row])} points`];
-  if (editing) parts.push('edit question');
-  else if (clue.played) parts.push('already played');
+  if (editing) {
+    parts.push('edit question');
+    if (clue.dailyDouble) parts.push('daily double');
+  } else if (clue.played) parts.push('already played');
   else if (!isReady(clue)) parts.push('not ready');
   return parts.join(', ');
 }
@@ -211,18 +224,20 @@ function renderGrid(state) {
         detail = 'Not ready';
       }
       if (detail) button.append(element('small', detail, 'detail'));
+      if (editing && clue.dailyDouble) button.append(element('span', 'DD', 'dd-badge'));
       grid.append(button);
     });
   });
 }
 
-function scoreButton(index, direction, name) {
+function scoreButton(index, direction, name, words) {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = 'score-btn';
+  button.className = words ? 'score-btn is-word' : 'score-btn';
   button.dataset.teamIndex = String(index);
   button.dataset.delta = String(direction);
-  button.textContent = direction < 0 ? '\u2212' : '+';
+  if (words) button.textContent = direction < 0 ? 'Incorrect' : 'Correct';
+  else button.textContent = direction < 0 ? '\u2212' : '+';
   button.setAttribute(
     'aria-label',
     `${direction < 0 ? 'Subtract points from' : 'Add points to'} ${name}`,
@@ -230,9 +245,10 @@ function scoreButton(index, direction, name) {
   return button;
 }
 
-function renderTeamList(container, state, editable) {
+function renderTeamList(container, state, editable, onlyIndex = null) {
   container.replaceChildren();
   state.teams.forEach((team, index) => {
+    if (onlyIndex !== null && index !== onlyIndex) return;
     const card = element('div', '', 'team');
     const name = teamLabel(state, index);
     if (editable) {
@@ -247,14 +263,15 @@ function renderTeamList(container, state, editable) {
     } else {
       card.append(element('span', name, 'team-name'));
     }
+    const words = onlyIndex !== null;
     const controls = element('div', '', 'score-controls');
-    controls.append(scoreButton(index, -1, name));
+    controls.append(scoreButton(index, -1, name, words));
     const output = element('output', formatNumber(team.score), 'score');
     output.dataset.scoreFor = String(index);
     output.setAttribute('aria-live', 'polite');
     output.setAttribute('aria-label', `${name} score`);
     controls.append(output);
-    controls.append(scoreButton(index, 1, name));
+    controls.append(scoreButton(index, 1, name, words));
     card.append(controls);
     container.append(card);
   });
@@ -301,19 +318,83 @@ export function render(state) {
   updateStatus(state);
 }
 
+function paintWager(state) {
+  const open = state.openClue;
+  ddTeams.replaceChildren();
+  state.teams.forEach((team, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'dd-team' + (open.wagerTeam === index ? ' is-selected' : '');
+    button.textContent = teamLabel(state, index);
+    button.dataset.wagerTeam = String(index);
+    button.setAttribute('aria-pressed', open.wagerTeam === index ? 'true' : 'false');
+    ddTeams.append(button);
+  });
+  if (open.wagerTeam == null) {
+    ddWagerHint.textContent = 'Choose the team that will answer.';
+    return;
+  }
+  const low = minimumWager(state, open.wagerTeam);
+  const high = wagerLimit(state, open.wagerTeam);
+  ddWagerHint.textContent = `${teamLabel(state, open.wagerTeam)} may wager from ${formatNumber(low)} to ${formatNumber(high)}. The maximum is the greater of their score and the highest value on the board.`;
+}
+
 export function paintClue(state) {
   const open = state.openClue;
   if (!open) return;
+  const stage = open.stage || 'clue';
   const points = state.pointValues[open.rowIndex];
   const clue = state.categories[open.categoryIndex].clues[open.rowIndex];
+  ddAnnounce.hidden = stage !== 'announce';
+  ddWager.hidden = stage !== 'wager';
+  clueStage.hidden = stage !== 'clue';
+  awardHint.hidden = stage !== 'clue';
+  clueTeams.hidden = stage !== 'clue';
   clueHeading.textContent = `${categoryLabel(state, open.categoryIndex)} · ${formatNumber(points)} points`;
+  if (stage === 'wager') {
+    ddWagerError.hidden = true;
+    paintWager(state);
+    return;
+  }
+  if (stage !== 'clue') return;
   clueText.textContent = clue.question;
   answerText.textContent = clue.answer;
   revealHint.hidden = open.answerVisible;
   answerWrap.hidden = !open.answerVisible;
   revealButton.classList.toggle('is-revealed', open.answerVisible);
-  awardHint.textContent = `Team buttons add or subtract ${formatNumber(points)} points.`;
+  const amount = open.wagerAmount != null ? open.wagerAmount : points;
+  awardHint.textContent = open.wagerAmount != null
+    ? `Correct adds ${formatNumber(amount)}. Incorrect subtracts ${formatNumber(amount)}. Only this team scores.`
+    : `Team buttons add or subtract ${formatNumber(points)} points.`;
   requestAnimationFrame(fitClueText);
+}
+
+export function renderClueScores(state) {
+  const open = state.openClue;
+  if (!open || (open.stage || 'clue') !== 'clue') {
+    clueTeams.replaceChildren();
+    return;
+  }
+  const only = open.wagerAmount != null ? open.wagerTeam : null;
+  renderTeamList(clueTeams, state, false, only);
+}
+
+export function focusClue(state) {
+  const open = state.openClue;
+  if (!open) return;
+  const stage = open.stage || 'clue';
+  if (stage === 'announce') ddToWager.focus();
+  else if (stage === 'wager') ddAmount.focus();
+  else if (!open.answerVisible) revealButton.focus();
+}
+
+export function setWagerError(text) {
+  ddWagerError.hidden = !text;
+  ddWagerError.textContent = text || '';
+}
+
+export function wagerAmountValue() {
+  return ddAmount.value;
 }
 
 /** Shrink the question and answer until they fit the overlay. */
@@ -351,11 +432,9 @@ window.addEventListener('resize', () => {
 
 export function showClue(state) {
   paintClue(state);
-  renderTeamList(clueTeams, state, false);
-  if (!clueDialog.open) {
-    clueDialog.showModal();
-    revealButton.focus();
-  }
+  renderClueScores(state);
+  if (!clueDialog.open) clueDialog.showModal();
+  focusClue(state);
 }
 
 export function showEditor(state, col, row) {
@@ -364,6 +443,7 @@ export function showEditor(state, col, row) {
   editorQuestion.value = clue.question;
   editorAnswer.value = clue.answer;
   editorPlayed.checked = clue.played;
+  editorDailyDouble.checked = clue.dailyDouble === true;
   if (!editor.open) editor.showModal();
   editorQuestion.focus();
 }
@@ -381,7 +461,12 @@ export const nodes = {
   editorQuestion,
   editorAnswer,
   editorPlayed,
+  editorDailyDouble,
   editorDone: $('edit-done'),
+  ddToWager,
+  ddTeams,
+  ddAmount,
+  ddShowClue: $('dd-show-clue'),
   clueDialog,
   revealButton,
   closeClue: $('close-clue'),
