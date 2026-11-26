@@ -27,6 +27,7 @@ import {
   setTitle,
   updateClue,
 } from './game.js';
+import { installBuzzers } from './buzz-host.js';
 import { clearLinkedDriveFile, initLibrary } from './library.js';
 import { loadSavedGame, saveGame } from './persist.js';
 import {
@@ -42,6 +43,7 @@ import {
   setWagerError,
   showClue,
   showEditor,
+  onAfterRender,
   showWarning,
   syncFullscreenButton,
   updateRowPoints,
@@ -76,6 +78,7 @@ const REMOVE = {
 let state;
 let editing = null;
 let warningReason = null;
+let buzz = { afterScore() {}, sync() {} };
 
 function noteWarning(reason, message) {
   warningReason = reason;
@@ -192,6 +195,7 @@ function onGridClick(event) {
   if (!openClue(state, col, row)) return;
   persist();
   showClue(state);
+  buzz.sync();
 }
 
 function onGridKeydown(event) {
@@ -237,9 +241,11 @@ function onScoreClick(event) {
   const button = event.target.closest('[data-delta]');
   if (!button) return;
   const direction = Number(button.dataset.delta) < 0 ? -1 : 1;
-  if (!changeScore(state, Number(button.dataset.teamIndex), direction)) return;
+  const teamIndex = Number(button.dataset.teamIndex);
+  if (!changeScore(state, teamIndex, direction)) return;
   persist();
   updateScores(state);
+  buzz.afterScore(teamIndex, direction);
 }
 
 function onReveal() {
@@ -339,6 +345,7 @@ function onDailyDoubleContinue() {
   if (!beginWager(state)) return;
   persist();
   showClue(state);
+  buzz.sync();
 }
 
 function onChooseWagerTeam(event) {
@@ -365,6 +372,7 @@ function onCommitWager() {
   setWagerError('');
   persist();
   showClue(state);
+  buzz.sync();
 }
 
 function onEscape(event) {
@@ -458,6 +466,16 @@ function boot() {
   }
 
   bind();
+  buzz = installBuzzers({
+    getState: () => state,
+    persist,
+    applyIncorrect(teamIndex) {
+      if (!changeScore(state, teamIndex, -1)) return;
+      persist();
+      updateScores(state);
+    },
+  });
+  onAfterRender(() => buzz.sync());
   render(state);
   initLibrary({
     getState: () => state,

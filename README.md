@@ -87,6 +87,16 @@ export const GOOGLE_CLIENT_ID = 'your-id.apps.googleusercontent.com';
 
 While the consent screen stays in Testing, Google expires the grant after about seven days. Sign in again when that happens. Add each person who should sign in as a test user, or publish the app once you are ready for that.
 
+## Phone buzzers
+
+In play or present, choose **Buzzers**. The panel shows a four-letter room code, a QR code, and a join link such as `https://levydvm.github.io/jeopardy/buzz.html?room=ABCD`. Each phone picks its team and taps **Buzz**. The host presses **Open buzzing** (or the B key) once a clue is on screen. The first buzz the host receives wins. **Incorrect** locks that team out and opens buzzing again for the others. A Daily Double does not use the buzzers.
+
+Timers follow the show unless you change them in the Buzzers panel: 5 seconds to buzz in, 5 seconds to answer, and 15 seconds on a Daily Double. If nobody buzzes, the window closes and you can reveal the answer with no score change. When an answer timer ends, that team is locked out and buzzing reopens; by default you still decide whether to mark them incorrect. Turn on “Mark incorrect when the answer timer ends” if the host should subtract the points automatically.
+
+Buzzing while the clue is up, before the host opens the window, locks that phone for 0.25 seconds and shows **Too early**. Each early press before the window opens starts that 0.25 seconds again. Once buzzing is open, a press during the remaining lockout is ignored and does not add time. The phone keeps this clock so the button can react immediately, and the host also rejects a buzz from a team that is still locked, so an early press cannot win. Set the lockout to 0 to turn it off. These settings are saved with the game. Old saves that have no timer fields load with the defaults.
+
+Phones talk to the host with WebRTC through PeerJS’s free public broker. No account or server of ours is involved. Some school or office networks block WebRTC, and the public broker is a best-effort service, so a phone may be unable to join. The score buttons on the host screen still work with no phones connected. Refreshing the host keeps the game and the room code; phones should reload the join link to reconnect.
+
 ## Local preview
 
 The scripts are ES modules, so open the site through a static server rather than by double-clicking `index.html` (browsers block modules on `file://` URLs).
@@ -123,3 +133,8 @@ Paths in the page are relative, so the site works when Pages serves it from eith
 - `js/library.js` — Export, Import, and Drive buttons
 - `js/ui.js` — rendering
 - `js/main.js` — connects the controls to the game
+- `buzz.html`, `buzz.css`, `js/buzz-phone.js` — the phone buzzer page
+- `js/buzz-host.js`, `js/buzzer.js`, `js/room.js`, `js/timers.js` — host buzzer, rules, room connection, and clocks
+- `vendor/peerjs.min.js` — PeerJS 1.5.4 (MIT, Michelle Bu and Eric Zhang)
+- `vendor/qrcode.js` — QR Code Generator for JavaScript (MIT, Kazuhiko Arase)
+- `tests/buzzer.test.mjs` — buzzer and timer rules (`node tests/buzzer.test.mjs`)

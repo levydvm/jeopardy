@@ -15,6 +15,7 @@
  * }
  */
 import { SAMPLE_CATEGORIES, SAMPLE_TITLE } from './sample.js';
+import { normalizeTimers } from './timers.js';
 
 export const LIMITS = {
   version: 1,
@@ -73,6 +74,7 @@ export function createGame(blank = false) {
     openClue: null,
     presenting: false,
     adjustBy: 100,
+    timers: normalizeTimers(null),
   };
 }
 
@@ -241,6 +243,7 @@ export function parseGame(input) {
     openClue,
     presenting: input.presenting,
     adjustBy: input.adjustBy,
+    timers: normalizeTimers(input.timers),
   };
 }
 
