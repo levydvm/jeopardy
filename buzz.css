@@ -1,0 +1,113 @@
+:root {
+  color-scheme: dark;
+  --gold: #ffd76a;
+  --ink: #f4f7ff;
+  --muted: #c5d2f4;
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #071033;
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.phone {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: max(0.7rem, env(safe-area-inset-top)) 0.8rem max(0.8rem, env(safe-area-inset-bottom));
+}
+
+.phone-kicker {
+  margin: 0;
+  color: var(--gold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.6rem, 8vw, 2.6rem);
+  line-height: 1.05;
+}
+
+.phone-detail {
+  margin: 0;
+  min-height: 1.2rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.phone-meter {
+  width: min(100%, 28rem);
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #1a274f;
+  overflow: hidden;
+}
+
+.phone-meter-fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background: #7dffb3;
+}
+
+.phone-teams, .phone-name {
+  width: min(100%, 28rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.phone-teams button.is-mine {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 2px var(--gold);
+}
+
+.phone-teams button, .phone-join, .phone-name input {
+  font: inherit;
+  border-radius: 10px;
+  border: 1px solid #8ea4d8;
+  background: #16285f;
+  color: white;
+  padding: 0.7rem 0.8rem;
+}
+
+.phone-name input { width: 100%; background: #0d1842; }
+
+.phone-buzz {
+  margin-top: auto;
+  width: min(100%, 28rem);
+  flex: 1 1 auto;
+  min-height: 38dvh;
+  border: 0;
+  border-radius: 22px;
+  background: #2454e0;
+  color: var(--gold);
+  font-size: clamp(2.4rem, 12vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.phone-buzz:disabled {
+  background: #2a3348;
+  color: #8d97ad;
+}
+
+.phone-buzz.is-open { background: #1d4ed8; }
+.phone-buzz.is-you { background: #14532d; color: #bbf7d0; }
+.phone-buzz.is-early { background: #7f1d1d; color: #fecaca; }
+.phone-buzz.is-other, .phone-buzz.is-locked { background: #3f3f46; color: #d4d4d8; }

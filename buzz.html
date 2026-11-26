@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Buzz · Jeopardy Game</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="buzz.css">
+</head>
+<body>
+  <main class="phone">
+    <p class="phone-kicker" id="phone-room">Room</p>
+    <h1 id="phone-status">Connecting…</h1>
+    <div id="phone-meter" class="phone-meter" hidden>
+      <div class="phone-meter-fill" id="phone-meter-fill"></div>
+    </div>
+    <p id="phone-detail" class="phone-detail"></p>
+    <div id="phone-teams" class="phone-teams"></div>
+    <form id="phone-name-form" class="phone-name" hidden>
+      <label>Your name
+        <input id="phone-name" maxlength="40" autocomplete="off" enterkeyhint="done">
+      </label>
+      <button class="phone-join" type="submit">Join</button>
+    </form>
+    <button id="phone-buzz" class="phone-buzz" type="button" disabled>BUZZ</button>
+  </main>
+  <script src="vendor/peerjs.min.js"></script>
+  <script type="module" src="js/buzz-phone.js"></script>
+</body>
+</html>

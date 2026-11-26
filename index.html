@@ -31,6 +31,7 @@
         </label>
         <div class="actions">
           <button id="mode-toggle" class="btn primary" type="button">Play game</button>
+          <button id="open-buzzers" class="btn" type="button" hidden>Buzzers</button>
           <button id="present-toggle" class="btn" type="button">Present</button>
           <button id="fullscreen-toggle" class="btn" type="button">Fullscreen</button>
         </div>
@@ -107,6 +108,36 @@
       </div>
     </dialog>
 
+    <dialog id="buzz-panel" aria-labelledby="buzz-panel-title">
+      <div class="clue-bar">
+        <h2 id="buzz-panel-title">Buzzers</h2>
+        <button id="buzz-panel-close" class="btn" type="button">Close</button>
+      </div>
+      <p id="buzz-status" class="status" role="status">Opening the room…</p>
+      <p class="buzz-code" id="buzz-code" aria-label="Room code"></p>
+      <canvas id="buzz-qr" width="180" height="180" aria-label="QR code for the phone buzzer"></canvas>
+      <a id="buzz-url" class="buzz-url" href="buzz.html"></a>
+      <ul id="buzz-links" class="buzz-links"></ul>
+      <fieldset class="timer-settings">
+        <legend>Timers</legend>
+        <label class="check"><input id="timers-enabled" type="checkbox"> Countdown timers</label>
+        <label class="check"><input id="timers-auto" type="checkbox"> Mark incorrect when the answer timer ends</label>
+        <label class="timer-field">Buzz window (seconds)
+          <input id="timers-buzz" type="number" min="1" max="120" step="1">
+        </label>
+        <label class="timer-field">Answer time (seconds)
+          <input id="timers-answer" type="number" min="1" max="120" step="1">
+        </label>
+        <label class="timer-field">Daily Double answer time (seconds)
+          <input id="timers-dd" type="number" min="1" max="120" step="1">
+        </label>
+        <label class="timer-field">Early buzz lockout (seconds, 0 off)
+          <input id="timers-early" type="number" min="0" max="5" step="0.05">
+        </label>
+      </fieldset>
+      <p class="help">Phones are optional. The team buttons on this screen still change the score.</p>
+    </dialog>
+
     <dialog id="editor" aria-labelledby="editor-title">
       <h2 id="editor-title">Edit question</h2>
       <p class="help">Changes save as you type.</p>
@@ -130,8 +161,15 @@
     <dialog id="clue" aria-labelledby="clue-heading">
       <div class="clue-bar">
         <h2 id="clue-heading"></h2>
+        <button id="open-buzzing" class="btn" type="button" hidden>Open buzzing</button>
+        <button id="close-buzzing" class="btn" type="button" hidden>Close buzzing</button>
         <button id="close-clue" class="btn" type="button">Back to grid · mark played</button>
       </div>
+      <div id="buzz-meter" class="buzz-meter" hidden>
+        <div class="buzz-meter-track"><div id="buzz-meter-fill"></div></div>
+        <span id="buzz-meter-label"></span>
+      </div>
+      <p id="buzz-banner" class="buzz-banner" hidden></p>
       <div id="dd-announce" class="dd-screen" hidden>
         <p class="kicker">This clue is a</p>
         <p class="dd-title">Daily Double</p>
@@ -171,6 +209,7 @@
       <li><strong>Name the teams</strong> before you play. You can add or remove teams in the editor. Removing a team deletes its score and asks you to confirm.</li>
       <li><strong>Play.</strong> A team picks a category and a point value. Click the square to show the question, then click again (or press Enter) to show the answer. There is no automatic judging.</li>
       <li><strong>Score by hand.</strong> While a question is open, + and − add or subtract that question’s points for one team. Scores may go below zero. Back to grid marks the square played, and it turns grey.</li>
+      <li><strong>Phone buzzers.</strong> In play, choose Buzzers and let each phone open the link or scan the QR code. Pick a team, show a clue, then Open buzzing (or press B). The first buzz wins and that team is highlighted. Incorrect locks them out and opens buzzing for the others. Buzzing before the window opens shows Too early on that phone for a quarter of a second. A Daily Double does not use the buzzers. The score buttons still work with no phones.</li>
       <li><strong>Daily Double.</strong> Mark a clue in the editor. On the board it looks like any other square. When it is picked, the host sees Daily Double, chooses the team, and enters a wager from 5 up to the greater of that team’s score and the highest value on the board. Only that team gains or loses the wager.</li>
       <li><strong>Adjust on the grid.</strong> Set Adjust by, then use a team’s + or − to add or subtract that amount — a bonus, a correction, or a penalty you choose.</li>
       <li><strong>Present</strong> fills the window for a projector or TV. Team scores stay on screen when a question is open. Fullscreen hides the browser toolbar. Exit presentation (or Escape, when no question is open) returns to the page.</li>
@@ -184,6 +223,8 @@
     <p>Jeopardy Game is an independent quiz board. It is not affiliated with, sponsored by, or endorsed by the Jeopardy television show or its owners. Jeopardy is a trademark of its owner.</p>
   </footer>
 
+  <script src="vendor/peerjs.min.js"></script>
+  <script src="vendor/qrcode.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

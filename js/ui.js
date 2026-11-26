@@ -250,6 +250,7 @@ function renderTeamList(container, state, editable, onlyIndex = null) {
   state.teams.forEach((team, index) => {
     if (onlyIndex !== null && index !== onlyIndex) return;
     const card = element('div', '', 'team');
+    card.dataset.teamCard = String(index);
     const name = teamLabel(state, index);
     if (editable) {
       const input = document.createElement('input');
@@ -274,6 +275,12 @@ function renderTeamList(container, state, editable, onlyIndex = null) {
     controls.append(scoreButton(index, 1, name, words));
     card.append(controls);
     container.append(card);
+  });
+}
+
+export function setBuzzHighlight(index) {
+  document.querySelectorAll('[data-team-card]').forEach((card) => {
+    card.classList.toggle('is-buzzed', index != null && card.dataset.teamCard === String(index));
   });
 }
 
@@ -310,12 +317,19 @@ export function focusCell(col, row) {
   fallback.focus();
 }
 
+let afterRender = () => {};
+
+export function onAfterRender(listener) {
+  afterRender = listener;
+}
+
 export function render(state) {
   board.hidden = false;
   syncChrome(state);
   renderGrid(state);
   renderTeamList(teams, state, state.mode === 'edit');
   updateStatus(state);
+  afterRender();
 }
 
 function paintWager(state) {

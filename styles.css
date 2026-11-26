@@ -1281,3 +1281,127 @@ body.is-presenting .skip {
   margin-bottom: 0.25rem;
   font-size: clamp(0.58rem, 1.3vh, 0.75rem);
 }
+
+.clue-bar {
+  flex-wrap: wrap;
+}
+
+.team.is-buzzed {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+.buzz-meter {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 1.15rem;
+}
+
+.buzz-meter-track {
+  height: 0.42rem;
+  border-radius: 999px;
+  background: #1a274f;
+  overflow: hidden;
+}
+
+#buzz-meter-fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background: #7dffb3;
+}
+
+.buzz-meter[data-kind="answer"] #buzz-meter-fill {
+  background: var(--gold);
+}
+
+#buzz-meter-label {
+  font-size: clamp(0.68rem, 1.6vh, 0.9rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.buzz-banner {
+  flex: none;
+  margin: 0;
+  text-align: center;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: clamp(0.78rem, 1.8vh, 1.05rem);
+}
+
+#buzz-panel {
+  width: min(440px, calc(100% - 1.2rem));
+}
+
+.buzz-code {
+  margin: 0.2rem 0;
+  text-align: center;
+  font-size: clamp(2rem, 8vw, 3rem);
+  letter-spacing: 0.18em;
+  font-weight: 800;
+}
+
+#buzz-qr {
+  display: block;
+  margin: 0 auto;
+  width: min(180px, 46vw);
+  height: auto;
+  background: white;
+  border-radius: 8px;
+}
+
+.buzz-url {
+  display: block;
+  margin: 0.4rem 0 0.6rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+.buzz-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.buzz-links li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.buzz-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #555e78;
+}
+
+.buzz-dot.on { background: #7dffb3; }
+
+.timer-settings {
+  margin-top: 0.7rem;
+  border: 1px solid rgba(180, 200, 245, 0.25);
+  border-radius: 10px;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.timer-field {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.88rem;
+}
+
+.timer-field input { width: 5rem; }
+
+body.is-editing #open-buzzers { display: none; }
