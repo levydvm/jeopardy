@@ -5,7 +5,7 @@
  *
  * Setup steps are in the README, under "Google Drive".
  */
-export const GOOGLE_CLIENT_ID = '';
+export const GOOGLE_CLIENT_ID = '1057652038968-qkqs8ogiin06rtlg2c64l1teik51ng5d.apps.googleusercontent.com';
 
 /**
  * drive.file can only see files this app creates or opens.
